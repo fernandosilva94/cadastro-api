@@ -35,4 +35,10 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioSelecionado);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Usuario> inativarUsuario(@PathVariable Long id) {
+        Usuario usuarioInativado = usuarioService.inativarUsuario(id);
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioInativado);
+    }
+
 }
