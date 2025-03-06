@@ -1,6 +1,9 @@
 package io.github.fernandosilva94.cadastro.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -10,12 +13,18 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String nome;
+    @NotNull
     private String email;
+    @NotNull
     private String senha;
+    @NotNull
     private String documento;
-
+    @NotNull
     private char status;
+    @Column(name = "data_criacao")
+    private LocalDateTime date;
 
     public Long getId() {
         return id;
@@ -65,6 +74,14 @@ public class Usuario {
         this.status = status;
     }
 
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +
@@ -74,6 +91,7 @@ public class Usuario {
                 ", senha='" + senha + '\'' +
                 ", documento='" + documento + '\'' +
                 ", status=" + status +
+                ", date=" + date +
                 '}';
     }
 }
