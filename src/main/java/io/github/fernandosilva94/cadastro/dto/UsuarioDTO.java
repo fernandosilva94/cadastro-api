@@ -1,10 +1,8 @@
 package io.github.fernandosilva94.cadastro.dto;
 
-import io.github.fernandosilva94.cadastro.model.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import org.antlr.v4.runtime.misc.NotNull;
 
 public class UsuarioDTO {
 
@@ -21,6 +19,8 @@ public class UsuarioDTO {
     @NotBlank(message = "Status não pode ser nulo")
     @Pattern(regexp = "[AI]", message = "Status deve ser 'A' (Ativo) ou 'I' (Inativo)")
     private char status;
+
+    private String nivelAcesso;
 
     public String getNome() {
         return nome;
@@ -68,5 +68,13 @@ public class UsuarioDTO {
 
     public void setStatus(char status) {
         this.status = status;
+    }
+
+    public String getNivelAcesso() {
+        return nivelAcesso;
+    }
+
+    public void setNivelAcesso(String nivelAcesso) {
+        this.nivelAcesso = nivelAcesso;
     }
 }
