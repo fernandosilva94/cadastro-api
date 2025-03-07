@@ -21,7 +21,6 @@ public class Usuario {
     private String senha;
     @NotNull
     private String documento;
-    @NotNull
     private char status;
     @Column(name = "data_criacao")
     private LocalDateTime date;

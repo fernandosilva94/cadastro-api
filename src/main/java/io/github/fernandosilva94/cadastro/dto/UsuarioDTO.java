@@ -16,10 +16,7 @@ public class UsuarioDTO {
     private String senha;
     @NotBlank(message = "documento não pode ser nulo")
     private String documento;
-    @NotBlank(message = "Status não pode ser nulo")
-    @Pattern(regexp = "[AI]", message = "Status deve ser 'A' (Ativo) ou 'I' (Inativo)")
     private char status;
-
     private String nivelAcesso;
 
     public String getNome() {

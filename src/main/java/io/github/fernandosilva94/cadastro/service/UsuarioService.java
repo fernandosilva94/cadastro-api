@@ -20,14 +20,8 @@ public class UsuarioService {
     }
 
     public Usuario salvar(UsuarioDTO usuarioDTO) {
-        if (!usuarioRepository.existsByEmail(usuarioDTO.getEmail()) && !usuarioRepository.existsByDocumento(usuarioDTO.getDocumento())) {
-            Usuario usuario;
+            Usuario usuario = this.validarNovoUsuario(usuarioDTO);
 
-            if (usuarioDTO.getNivelAcesso() != null) {
-                usuario = this.isAdmin(usuarioDTO);
-                } else {
-                usuario = new Usuario();
-            }
             usuario.setNome(usuarioDTO.getNome());
             usuario.setEmail(usuarioDTO.getEmail());
             usuario.setSenha(usuarioDTO.getSenha());
@@ -41,9 +35,6 @@ public class UsuarioService {
             } else {
                 throw new Error("Erro ao cadastrar usuario");
             }
-        } else {
-            throw new Error("Usuário já cadastrado.");
-        }
     }
 
     @Transactional
@@ -52,7 +43,6 @@ public class UsuarioService {
 
         if (usuarioDTO.getNivelAcesso() != null) {
             usuarioRepository.updateStatus(id, 'I');
-            usuarioRepository.save(usuarioEditado);
             usuarioEditado = this.isAdmin(usuarioDTO);
         }
 
@@ -80,6 +70,20 @@ public class UsuarioService {
             usuario = admin;
         } else {
             throw new Error("Nivel de acesso não encontrado");
+        }
+        return usuario;
+    }
+
+    public Usuario validarNovoUsuario (UsuarioDTO usuarioDTO) {
+            Usuario usuario;
+        if (!usuarioRepository.existsByEmail(usuarioDTO.getEmail()) && !usuarioRepository.existsByDocumento(usuarioDTO.getDocumento())) {
+            if (usuarioDTO.getNivelAcesso() != null) {
+                usuario = this.isAdmin(usuarioDTO);
+            } else {
+                usuario = new Usuario();
+            }
+        }  else {
+            throw new Error("Usuário já cadastrado.");
         }
         return usuario;
     }
