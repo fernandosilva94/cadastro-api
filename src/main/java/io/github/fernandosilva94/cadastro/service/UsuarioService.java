@@ -48,12 +48,11 @@ public class UsuarioService {
 
     @Transactional
     public Usuario editar(Long id, UsuarioDTO usuarioDTO) {
-
         Usuario usuarioEditado = this.getUsuarioById(id);
 
-        usuarioRepository.updateStatus(id, 'I');
-
         if (usuarioDTO.getNivelAcesso() != null) {
+            usuarioRepository.updateStatus(id, 'I');
+            usuarioRepository.save(usuarioEditado);
             usuarioEditado = this.isAdmin(usuarioDTO);
         }
 
