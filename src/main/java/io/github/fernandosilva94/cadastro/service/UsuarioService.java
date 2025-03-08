@@ -20,14 +20,8 @@ public class UsuarioService {
     }
 
     public Usuario salvar(UsuarioDTO usuarioDTO) {
-            Usuario usuario = this.validarNovoUsuario(usuarioDTO);
-
-            usuario.setNome(usuarioDTO.getNome());
-            usuario.setEmail(usuarioDTO.getEmail());
-            usuario.setSenha(usuarioDTO.getSenha());
-            usuario.setDocumento(usuarioDTO.getDocumento());
-            usuario.setStatus('A');
-            usuario.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+            Usuario usuario = validarNovoUsuario(usuarioDTO);
+            preencherDadosUsuario(usuario, usuarioDTO);
 
             Usuario usuarioSalvo = usuarioRepository.save(usuario);
             if (usuarioSalvo!= null) {
@@ -39,19 +33,13 @@ public class UsuarioService {
 
     @Transactional
     public Usuario editar(Long id, UsuarioDTO usuarioDTO) {
-        Usuario usuarioEditado = this.getUsuarioById(id);
+        Usuario usuarioEditado = getUsuarioById(id);
 
         if (usuarioDTO.getNivelAcesso() != null) {
             usuarioRepository.updateStatus(id, 'I');
-            usuarioEditado = this.isAdmin(usuarioDTO);
+            usuarioEditado = isAdmin(usuarioDTO);
         }
-
-        usuarioEditado.setNome(usuarioDTO.getNome());
-        usuarioEditado.setEmail(usuarioDTO.getEmail());
-        usuarioEditado.setSenha(usuarioDTO.getSenha());
-        usuarioEditado.setDocumento(usuarioDTO.getDocumento());
-        usuarioEditado.setStatus('A');
-        usuarioEditado.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        preencherDadosUsuario(usuarioEditado, usuarioDTO);
 
         return usuarioRepository.save(usuarioEditado);
     }
@@ -74,7 +62,7 @@ public class UsuarioService {
         return usuario;
     }
 
-    public Usuario validarNovoUsuario (UsuarioDTO usuarioDTO) {
+    private Usuario validarNovoUsuario (UsuarioDTO usuarioDTO) {
             Usuario usuario;
         if (!usuarioRepository.existsByEmail(usuarioDTO.getEmail()) && !usuarioRepository.existsByDocumento(usuarioDTO.getDocumento())) {
             if (usuarioDTO.getNivelAcesso() != null) {
@@ -86,6 +74,15 @@ public class UsuarioService {
             throw new Error("Usuário já cadastrado.");
         }
         return usuario;
+    }
+
+    private void preencherDadosUsuario(Usuario usuario, UsuarioDTO usuarioDTO) {
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setDocumento(usuarioDTO.getDocumento());
+        usuario.setStatus('A');
+        usuario.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
     }
 
     public Usuario inativarUsuario(Long id) {
