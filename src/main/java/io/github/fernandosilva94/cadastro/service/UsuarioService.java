@@ -22,9 +22,8 @@ public class UsuarioService {
 
     public Usuario salvar(UsuarioDTO usuarioDTO) {
         try {
-            Usuario usuario = validarNovoUsuario(usuarioDTO);
-            preencherDadosUsuario(usuario, usuarioDTO);
-
+            validarNovoUsuario(usuarioDTO);
+            Usuario usuario = preencherDadosUsuario(usuarioDTO);
             Usuario usuarioSalvo = usuarioRepository.save(usuario);
             if (usuarioSalvo!= null) {
                 return usuarioSalvo;
@@ -40,12 +39,8 @@ public class UsuarioService {
     public Usuario editar(Long id, UsuarioDTO usuarioDTO) {
         Usuario usuarioEditado;
         try {
-            usuarioEditado = getUsuarioById(id);
-            if (usuarioDTO.getNivelAcesso() != null) {
-                usuarioRepository.updateStatus(id, 'I');
-                usuarioEditado = isAdmin(usuarioDTO);
-            }
-            preencherDadosUsuario(usuarioEditado, usuarioDTO);
+            usuarioRepository.updateStatus(id, 'I');
+            usuarioEditado = preencherDadosUsuario(usuarioDTO);
         } catch (Exception e) {
             throw new UsuarioEditadoException("Erro ao editar usuário.", e);
         }
@@ -89,31 +84,30 @@ public class UsuarioService {
         return usuario;
     }
 
-    private Usuario validarNovoUsuario (UsuarioDTO usuarioDTO) {
-        Usuario usuario;
+    private void validarNovoUsuario (UsuarioDTO usuarioDTO) {
         try {
-            if (!usuarioRepository.existsByEmail(usuarioDTO.getEmail()) && !usuarioRepository.existsByDocumento(usuarioDTO.getDocumento())) {
-                if (usuarioDTO.getNivelAcesso() != null) {
-                    usuario = this.isAdmin(usuarioDTO);
-                } else {
-                    usuario = new Usuario();
-                }
-            }  else {
+            if (usuarioRepository.existsByEmail(usuarioDTO.getEmail()) && usuarioRepository.existsByDocumento(usuarioDTO.getDocumento())) {
                 throw new UsuarioJaCadastradoException("Usuário já cadastrado.");
             }
         } catch (Exception e) {
             throw new UsuarioCadastroException("Erro ao validar dados do usuário.", e);
         }
-        return usuario;
     }
 
-    private void preencherDadosUsuario(Usuario usuario, UsuarioDTO usuarioDTO) {
+    private Usuario preencherDadosUsuario(UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+
+        if (usuarioDTO.getNivelAcesso() != null) {
+            usuario = isAdmin(usuarioDTO);
+        }
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setSenha(usuarioDTO.getSenha());
         usuario.setDocumento(usuarioDTO.getDocumento());
         usuario.setStatus('A');
         usuario.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+
+        return usuario;
     }
 
 }
